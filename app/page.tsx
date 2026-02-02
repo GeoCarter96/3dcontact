@@ -4,7 +4,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, ContactShadows, Float } from "@react-three/drei";
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { Group } from 'three';
-
+import Link from "next/link";
 
 interface ProjectCubeProps {
   onSelect: (projectName: string) => void;
@@ -72,7 +72,7 @@ export default function PortfolioPage() {
         <nav style={{ position: "absolute", top: 0, width: "100%", padding: "40px", display: "flex", justifyContent: "space-between", zIndex: 10 }}>
           <div style={{ letterSpacing: "5px", fontSize: "12px", fontWeight: "bold" }}>PORTFOLIO / GEOFFREY CARTER</div>
           <div style={{ display: "flex", gap: "30px", fontSize: "11px", letterSpacing: "2px" }}>
-            <a href="#services" style={{ color: "skyblue", textDecoration: "none" }}>CONTACT</a>
+          
           
           </div>
         </nav>
@@ -122,7 +122,9 @@ export default function PortfolioPage() {
             <div id="contact" style={{ background: "#111", padding: "40px", border: "1px solid #222" }}>
               <h3 style={{ fontWeight: "300", fontSize: "24px", color: "skyblue" }}>Contact Me</h3>
               <p style={{ color: "#888", fontSize: "14px" }}>Currently looking to explore new projects</p>
+              <Link href="/contact" style={{ textDecoration: 'none', width: '100%' }}>
               <button style={{ width: "100%", padding: "15px", marginTop: "20px", background: "skyblue", border: "none", color: "black", fontWeight: "bold", cursor: "pointer" }}>INQUIRE NOW</button>
+              </Link>
             </div>
           </div>
         </div>
