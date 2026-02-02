@@ -67,12 +67,12 @@ export default function ContactPage() {
   }, [mouseX, mouseY]);
 
   const projects = [
-    { name: "The Design Lounge", year: "2026", type: "E-Commerce", img: "https://images.unsplash.com", url: "https://thedesignlounge.vercel.app" },
-    { name: "THE WUN", year: "2026", type: "Contact Page", img: "https://images.unsplash.com", url: "https://thewun-sigma.vercel.app" },
-    { name: "Skinstric AI", year: "2026", type: "AI Scanning", img: "https://images.unsplash.com", url: "https://skinstricai-sage.vercel.app" },
-    { name: "Ultraverse", year: "2025", type: "Social Media", img: "https://images.unsplash.com", url: "https://geoff-internship.vercel.app" },
-    { name: "Netflix Clone", year: "2025", type: "Streaming", img: "https://images.unsplash.com", url: "https://netflixclone-gilt-two.vercel.app" },
-    { name: "Summarist", year: "2025", type: "E-Commerce", img: "https://images.unsplash.com", url: "https://summaristproject-tau.vercel.app" },
+    { name: "The Design Lounge", year: "2026", type: "E-Commerce", img: "design.png", url: "https://thedesignlounge.vercel.app" },
+    { name: "THE WUN", year: "2026", type: "Contact Page", img: "thewun.png", url: "https://thewun-sigma.vercel.app" },
+    { name: "Skinstric AI", year: "2026", type: "AI Scanning", img: "skinstric.png", url: "https://skinstricai-sage.vercel.app" },
+    { name: "Ultraverse", year: "2025", type: "Social Media", img: "ultra.png", url: "https://geoff-internship.vercel.app" },
+    { name: "Netflix Clone", year: "2025", type: "Streaming", img: "netflix.jpg", url: "https://netflixclone-gilt-two.vercel.app" },
+    { name: "Summarist", year: "2025", type: "E-Commerce", img: "sum.png", url: "https://summaristproject-tau.vercel.app" },
   ];
 
   return (
