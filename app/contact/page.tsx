@@ -194,12 +194,23 @@ useEffect(() => {
             The <span style={{ color: "skyblue" }}>Connection</span>
           </h1> 
          
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "25px", pointerEvents: "auto" }}>
+        <form 
+  onSubmit={handleSubmit} 
+  style={{ 
+    display: "flex", 
+    flexDirection: "column", 
+    gap: "25px", 
+    pointerEvents: "auto",
+    width: "100%",           // Ensures form fills the parent
+    maxWidth: "400px",      // Keeps it from getting too wide
+    alignItems: "stretch"    // Forces children to line up perfectly
+  }}
+>
   <input 
     required 
     type="text" 
     placeholder="NAME" 
-    style={inputStyle} 
+    style={{ ...inputStyle, boxSizing: "border-box", width: "100%" }} 
     value={formData.name}
     onChange={(e) => setFormData({...formData, name: e.target.value})}
   />
@@ -210,6 +221,8 @@ useEffect(() => {
     placeholder="EMAIL" 
     style={{
       ...inputStyle,
+      boxSizing: "border-box",
+      width: "100%",
       borderBottom: formData.email && !emailRegex.test(formData.email) 
         ? "1px solid #ff4d4d" 
         : "1px solid rgba(255,255,255,0.1)"
@@ -218,23 +231,27 @@ useEffect(() => {
     onChange={(e) => setFormData({...formData, email: e.target.value})}
   />
 
-  {/* Wrapped Textarea in a relative div to fix counter positioning */}
-  <div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+  <div style={{ position: "relative", width: "100%" }}>
     <textarea 
       required 
       placeholder="MESSAGE" 
       rows={4}  
-      style={{...inputStyle, height: "100px", resize: "none", width: "100%"}}  
+      style={{
+        ...inputStyle, 
+        height: "100px", 
+        resize: "none", 
+        width: "100%", 
+        boxSizing: "border-box" 
+      }}  
       value={formData.message} 
       onChange={(e) => setFormData({...formData, message: e.target.value})}
     />
     <div style={{ 
       position: "absolute", 
-      bottom: "-18px", 
+      bottom: "-20px", 
       right: "0", 
       fontSize: "9px", 
       color: formData.message.length > MAX_CHARS ? "#ff4d4d" : "#666",
-      transition: "color 0.2s"
     }}>
       {formData.message.length} / {MAX_CHARS}
     </div>
@@ -245,20 +262,25 @@ useEffect(() => {
     disabled={!isFormValid || status === "SENDING"}
     style={{ 
       ...glassButtonStyle,
-      width: "100%",
+      width: "100%", 
+      boxSizing: "border-box",
       opacity: isFormValid ? 1 : 0.3,
       cursor: isFormValid ? "pointer" : "not-allowed",
       transition: "all 0.3s ease",
-      marginTop: "10px", // Added spacing for the counter
+      marginTop: "10px", 
       color: isFormValid ? "skyblue" : "white"
     }}
   >
     {status === "SENDING" ? "SENDING..." : "SEND MESSAGE"}
   </button>
 
-  {status === "SUCCESS" && <p style={{fontSize: "10px", textAlign: "center", color: "skyblue"}}>SENT SUCCESSFULLY</p>}
-  {status === "ERROR" && <p style={{fontSize: "10px", textAlign: "center", color: "#ff4d4d"}}>SYSTEM ERROR. TRY AGAIN.</p>}
+  
+  <div style={{ minHeight: "20px" }}> 
+    {status === "SUCCESS" && <p style={{fontSize: "10px", textAlign: "center", color: "skyblue", margin: 0}}>SENT SUCCESSFULLY</p>}
+    {status === "ERROR" && <p style={{fontSize: "10px", textAlign: "center", color: "#ff4d4d", margin: 0}}>SYSTEM ERROR. TRY AGAIN.</p>}
+  </div>
 </form>
+
   </div>
  {isGPUActive ? (
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
