@@ -7,15 +7,22 @@ export async function POST(req: Request) {
   try {
     const { name, email, message } = await req.json();
 
-    const data = await resend.emails.send({
-      from: 'onboarding@resend.dev', // Use your verified domain in production
-      to: 'geolcarter21@gmail.com',    // Where you want to receive the messages
-      subject: `New Portfolio Message from ${name}`,
-      html: `<p><strong>Email:</strong> ${email}</p><p>${message}</p>`,
+    
+    const { data, error } = await resend.emails.send({
+      from:'Contact Form <onboarding@resend.dev>', 
+      to: 'geolcarter21@gmail.com',    
+      subject: `New  Message from ${name}`,
+      html: `<p><strong>From:</strong> ${name} (${email})</p><p>${message}</p>`,
     });
 
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+    if (error) {
+      console.error("Resend API Error:", error);
+      return NextResponse.json({ error }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true, data });
+  } catch (err) {
+    console.error("Server Error:", err);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

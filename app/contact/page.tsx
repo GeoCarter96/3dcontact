@@ -83,11 +83,14 @@ useEffect(() => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
+  const MAX_CHARS = 500;
    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const isFormValid = 
-    formData.name.trim().length > 0 && 
-    emailRegex.test(formData.email) && 
-    formData.message.trim().length > 0;
+  formData.name.trim().length > 0 && 
+  emailRegex.test(formData.email) && 
+  formData.message.trim().length > 0 && 
+  formData.message.length <= MAX_CHARS;
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,6 +102,7 @@ useEffect(() => {
         body: JSON.stringify(formData),
         headers: { "Content-Type": "application/json" },
       });
+      console.log("Response Status:", res.status);
       if (res.ok) {
         setStatus("SUCCESS");
         setFormData({ name: "", email: "", message: "" });
@@ -191,47 +195,71 @@ useEffect(() => {
           </h1> 
          
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "25px", pointerEvents: "auto" }}>
-             <input 
-              required 
-              type="text" 
-              placeholder="NAME" 
-              style={inputStyle} 
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-            />
-            <input 
-              required 
-              type="email" 
-              placeholder="EMAIL" 
-              style={{
-                ...inputStyle,
-                borderBottom: formData.email && !emailRegex.test(formData.email) 
-                  ? "1px solid #ff4d4d" 
-                  : "1px solid rgba(255,255,255,0.1)"
-              }} 
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-            />
-            <textarea 
-              required placeholder="MESSAGE" rows={4}  style={{...inputStyle, height: "100px", resize: "none"}}  
-              value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})}
-            />
-            <button 
-              type="submit" 
-              disabled={!isFormValid || status === "SENDING"}
-              style={{ ...glassButtonStyle,
-                width: "100%",
-                opacity: isFormValid ? 1 : 0.3,
-                cursor: isFormValid ? "pointer" : "not-allowed",
-                transition: "all 0.3s ease",
-                color: isFormValid ? "skyblue" : "white"}}
-            >
-              {status === "SENDING" ? "TRANSMITTING..." : "SEND MESSAGE"}
-            </button>
-             {status === "SUCCESS" && <p style={{fontSize: "10px", textAlign: "center", color: "skyblue"}}>SENT SUCCESSFULLY</p>}
-            {status === "ERROR" && <p style={{fontSize: "10px", textAlign: "center", color: "#ff4d4d"}}>SYSTEM ERROR. TRY AGAIN.</p>}
-          </form>
-        </div>
+  <input 
+    required 
+    type="text" 
+    placeholder="NAME" 
+    style={inputStyle} 
+    value={formData.name}
+    onChange={(e) => setFormData({...formData, name: e.target.value})}
+  />
+  
+  <input 
+    required 
+    type="email" 
+    placeholder="EMAIL" 
+    style={{
+      ...inputStyle,
+      borderBottom: formData.email && !emailRegex.test(formData.email) 
+        ? "1px solid #ff4d4d" 
+        : "1px solid rgba(255,255,255,0.1)"
+    }} 
+    value={formData.email}
+    onChange={(e) => setFormData({...formData, email: e.target.value})}
+  />
+
+  {/* Wrapped Textarea in a relative div to fix counter positioning */}
+  <div style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+    <textarea 
+      required 
+      placeholder="MESSAGE" 
+      rows={4}  
+      style={{...inputStyle, height: "100px", resize: "none", width: "100%"}}  
+      value={formData.message} 
+      onChange={(e) => setFormData({...formData, message: e.target.value})}
+    />
+    <div style={{ 
+      position: "absolute", 
+      bottom: "-18px", 
+      right: "0", 
+      fontSize: "9px", 
+      color: formData.message.length > MAX_CHARS ? "#ff4d4d" : "#666",
+      transition: "color 0.2s"
+    }}>
+      {formData.message.length} / {MAX_CHARS}
+    </div>
+  </div>
+
+  <button 
+    type="submit" 
+    disabled={!isFormValid || status === "SENDING"}
+    style={{ 
+      ...glassButtonStyle,
+      width: "100%",
+      opacity: isFormValid ? 1 : 0.3,
+      cursor: isFormValid ? "pointer" : "not-allowed",
+      transition: "all 0.3s ease",
+      marginTop: "10px", // Added spacing for the counter
+      color: isFormValid ? "skyblue" : "white"
+    }}
+  >
+    {status === "SENDING" ? "SENDING..." : "SEND MESSAGE"}
+  </button>
+
+  {status === "SUCCESS" && <p style={{fontSize: "10px", textAlign: "center", color: "skyblue"}}>SENT SUCCESSFULLY</p>}
+  {status === "ERROR" && <p style={{fontSize: "10px", textAlign: "center", color: "#ff4d4d"}}>SYSTEM ERROR. TRY AGAIN.</p>}
+</form>
+  </div>
  {isGPUActive ? (
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
             <Canvas camera={{ position: [0, 0, 10], fov: 35 }}>
