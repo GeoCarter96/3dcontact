@@ -4,7 +4,7 @@ import { motion, useSpring, useMotionValue } from "framer-motion";
 
 export default function CustomCursor() {
   const [isMobile, setIsMobile] = useState(false);
-  const [isClicked, setIsClicked] = useState(false); // NEW: Track click state
+  const [isClicked, setIsClicked] = useState(false); 
   
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);

@@ -201,9 +201,9 @@ useEffect(() => {
     flexDirection: "column", 
     gap: "25px", 
     pointerEvents: "auto",
-    width: "100%",           // Ensures form fills the parent
-    maxWidth: "400px",      // Keeps it from getting too wide
-    alignItems: "stretch"    // Forces children to line up perfectly
+    width: "100%",           
+    maxWidth: "400px",      
+    alignItems: "stretch"    
   }}
 >
   <input 
