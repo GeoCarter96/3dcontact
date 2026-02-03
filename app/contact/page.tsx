@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { motion, AnimatePresence, useSpring, useMotionValue } from "framer-motion";
 import * as THREE from "three";
+import './contact.css'
 
 function InteractivePulse() {
   const groupRef = useRef<THREE.Group>(null!);
@@ -49,22 +50,65 @@ function InteractivePulse() {
 export default function ContactPage() {
   const [showProjects, setShowProjects] = useState(false);
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
+  const [isGPUActive, setIsGPUActive] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const checkMobile = () => setIsMobile(window.innerWidth < 768);
+  checkMobile(); 
+  window.addEventListener('resize', checkMobile);
+  return () => window.removeEventListener('resize', checkMobile);
+}, []);
+useEffect(() => {
+  const canvas = document.createElement("canvas");
+  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+  if (!gl) setIsGPUActive(false); 
+}, []);
+  
+  
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState<"IDLE" | "SENDING" | "SUCCESS" | "ERROR">("IDLE");
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
   const springX = useSpring(mouseX, { stiffness: 100, damping: 20 });
   const springY = useSpring(mouseY, { stiffness: 100, damping: 20 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-
       mouseX.set(e.clientX - 450); 
       mouseY.set(e.clientY - 125);
     };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
+
+   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isFormValid = 
+    formData.name.trim().length > 0 && 
+    emailRegex.test(formData.email) && 
+    formData.message.trim().length > 0;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid) return;
+    setStatus("SENDING");
+    try {
+      const res = await fetch("/api/send", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" },
+      });
+      if (res.ok) {
+        setStatus("SUCCESS");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setStatus("ERROR");
+      }
+    } catch (err) {
+      setStatus("ERROR");
+    }
+  };
 
   const projects = [
     { name: "The Design Lounge", year: "2026", type: "E-Commerce", img: "design.png", url: "https://thedesignlounge.vercel.app" },
@@ -83,6 +127,9 @@ export default function ContactPage() {
           <Link href="/" style={glassButtonStyle}>←</Link>
           <button onClick={() => setShowProjects(true)} style={glassButtonStyle}>RECENT PROJECTS</button>
         </div>
+         
+      
+
 
         <AnimatePresence>
           {showProjects && (
@@ -95,21 +142,24 @@ export default function ContactPage() {
             >
               <button onClick={() => setShowProjects(false)} style={closeButtonStyle}> ✕</button>
               <h2 style={{ letterSpacing: "5px", fontSize: "12px", color: "skyblue", marginBottom: "40px" }}>ARCHIVE</h2>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
-                {projects.map((proj, i) => (
-                  <Link key={i} href={proj.url} target="_blank" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <motion.div 
-                      whileHover={{ x: 10 }}
-                      onMouseEnter={() => setHoveredImage(proj.img)}
-                      onMouseLeave={() => setHoveredImage(null)}
-                      style={{ borderBottom: "1px solid #222", paddingBottom: "15px", cursor: "pointer" }}
-                    >
-                      <div style={{ fontSize: "20px", fontWeight: "300" }}>{proj.name}</div>
-                      <div style={{ fontSize: "10px", color: "#666", marginTop: "5px", letterSpacing: "2px" }}>{proj.type} / {proj.year}</div>
-                    </motion.div>
-                  </Link>
-                ))}
+             <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+  {projects.map((proj, i) => (
+    <Link key={i} href={proj.url} target="_blank" style={{ textDecoration: 'none', color: 'inherit' }}>
+      <motion.div 
+        
+        whileHover={!isMobile ? { x: 10 } : {}}
+        
+        onMouseEnter={() => !isMobile && setHoveredImage(proj.img)}
+        onMouseLeave={() => !isMobile && setHoveredImage(null)}
+        style={{ borderBottom: "1px solid #222", paddingBottom: "15px", cursor: "pointer" }}
+      >
+        <div style={{ fontSize: "20px", fontWeight: "300" }}>{proj.name}</div>
+        <div style={{ fontSize: "10px", color: "#666", marginTop: "5px", letterSpacing: "2px" }}>
+          {proj.type} / {proj.year}
+        </div>
+      </motion.div>
+    </Link>
+  ))}
               </div>
             </motion.div>
           )}
@@ -123,18 +173,9 @@ export default function ContactPage() {
               exit={{ opacity: 0, scale: 0.5 }}
               transition={{ duration: 0.3 }}
               style={{
-                position: "fixed",
-                left: 0,
-                top: 0,
-                x: springX,
-                y: springY,
-                zIndex: 300, 
-                width: "400px",
-                height: "250px",
-                borderRadius: "12px",
-                overflow: "hidden",
-                border: "1px solid rgba(135, 206, 235, 0.4)",
-                pointerEvents: "none",
+                position: "fixed", left: 0, top: 0, x: springX, y: springY, zIndex: 300, 
+                width: "400px", height: "250px", borderRadius: "12px", overflow: "hidden",
+                border: "1px solid rgba(135, 206, 235, 0.4)", pointerEvents: "none",
                 boxShadow: "0 30px 60px rgba(0,0,0,0.8)"
               }}
             >
@@ -148,15 +189,50 @@ export default function ContactPage() {
           <h1 style={{ fontSize: "42px", fontWeight: "200", textAlign: "center", marginBottom: "40px", pointerEvents: "auto" }}>
             The <span style={{ color: "skyblue" }}>Connection</span>
           </h1> 
-          <form style={{ display: "flex", flexDirection: "column", gap: "25px", pointerEvents: "auto" }}>
-            <input type="text" placeholder="NAME" style={inputStyle} />
-            <input type="email" placeholder="EMAIL" style={inputStyle} />
-            <textarea placeholder="MESSAGE" rows={4} style={inputStyle} />
-            <button style={submitButtonStyle}>SEND MESSAGE</button>
+         
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "25px", pointerEvents: "auto" }}>
+             <input 
+              required 
+              type="text" 
+              placeholder="NAME" 
+              style={inputStyle} 
+              value={formData.name}
+              onChange={(e) => setFormData({...formData, name: e.target.value})}
+            />
+            <input 
+              required 
+              type="email" 
+              placeholder="EMAIL" 
+              style={{
+                ...inputStyle,
+                borderBottom: formData.email && !emailRegex.test(formData.email) 
+                  ? "1px solid #ff4d4d" 
+                  : "1px solid rgba(255,255,255,0.1)"
+              }} 
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+            />
+            <textarea 
+              required placeholder="MESSAGE" rows={4}  style={{...inputStyle, height: "100px", resize: "none"}}  
+              value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})}
+            />
+            <button 
+              type="submit" 
+              disabled={!isFormValid || status === "SENDING"}
+              style={{ ...glassButtonStyle,
+                width: "100%",
+                opacity: isFormValid ? 1 : 0.3,
+                cursor: isFormValid ? "pointer" : "not-allowed",
+                transition: "all 0.3s ease",
+                color: isFormValid ? "skyblue" : "white"}}
+            >
+              {status === "SENDING" ? "TRANSMITTING..." : "SEND MESSAGE"}
+            </button>
+             {status === "SUCCESS" && <p style={{fontSize: "10px", textAlign: "center", color: "skyblue"}}>SENT SUCCESSFULLY</p>}
+            {status === "ERROR" && <p style={{fontSize: "10px", textAlign: "center", color: "#ff4d4d"}}>SYSTEM ERROR. TRY AGAIN.</p>}
           </form>
         </div>
-
-      
+ {isGPUActive ? (
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
             <Canvas camera={{ position: [0, 0, 10], fov: 35 }}>
               <ambientLight intensity={0.5} />
@@ -166,6 +242,11 @@ export default function ContactPage() {
               </EffectComposer>
             </Canvas>
         </div>
+          ) : (
+             <div style={{ background: '#050505', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: 'skyblue' }}>[3D EXPERIENCE UNAVAILABLE - GPU ACCELERATION REQUIRED]</p>
+      </div>
+    )}
       </section>
     </main>
   );

@@ -1,5 +1,5 @@
 "use client";
-import  { useRef, useState } from "react";
+import  { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, ContactShadows, Float } from "@react-three/drei";
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
@@ -61,6 +61,13 @@ function ProjectCube({ onSelect }: ProjectCubeProps) {
 
 export default function PortfolioPage() {
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [isGPUActive, setIsGPUActive] = useState(true);
+
+useEffect(() => {
+  const canvas = document.createElement("canvas");
+  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+  if (!gl) setIsGPUActive(false); 
+}, []);
 
   return (
     <main style={{ background: "#050505", minHeight: "100vh", color: "white", fontFamily: "'Inter', sans-serif" }}>
@@ -83,7 +90,7 @@ export default function PortfolioPage() {
           <p style={{ color: "#888", marginTop: "20px", fontSize: "14px", lineHeight: "1.6", letterSpacing: "1px" }}>
             Frontend Developer specializing in high-performance Next.js, React, and Typescript applications and immersive 3D web experiences.
           </p>
-          <p style={{ fontSize: "10px", color: "skyblue", marginTop: "30px", letterSpacing: "3px" }}>CLICK THE CUBE TO EXPLORE EXPERTISE</p>
+          <p style={{ fontSize: "10px", color: "skyblue", marginTop: "30px", letterSpacing: "3px" }}>CLICK AND FLIP THE CUBE TO EXPLORE EXPERTISE</p>
         </div>
 
 
@@ -94,7 +101,7 @@ export default function PortfolioPage() {
             <button onClick={() => setSelectedProject(null)} style={{ background: "none", border: "none", color: "#888", fontSize: "11px", cursor: "pointer", padding: 0 }}>CLOSE</button>
           </div>
         )}
-
+ {isGPUActive ? (
         <Canvas camera={{ position: [6, 6, 6], fov: 35 }}>
           <Environment preset="city" /> 
           <ProjectCube onSelect={setSelectedProject} />
@@ -104,6 +111,11 @@ export default function PortfolioPage() {
             <Bloom luminanceThreshold={1} intensity={1.2} mipmapBlur />
           </EffectComposer>
         </Canvas>
+          ) : (
+             <div style={{ background: '#050505', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: 'skyblue' }}>[3D EXPERIENCE UNAVAILABLE - GPU ACCELERATION REQUIRED]</p>
+      </div>
+    )}
       </section>
 
    
