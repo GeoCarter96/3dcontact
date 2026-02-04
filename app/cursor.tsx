@@ -14,9 +14,13 @@ export default function CustomCursor() {
   const smoothY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    const checkDevice = () => {
-      setIsMobile(window.innerWidth < 768 || ('ontouchstart' in window));
-    };
+  const checkDevice = () => {
+    
+    const isSmallScreen = window.innerWidth <= 1024;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    setIsMobile(isSmallScreen || isTouchDevice);
+  };
 
     checkDevice();
     window.addEventListener("resize", checkDevice);

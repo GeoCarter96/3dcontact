@@ -7,3 +7,8 @@ a, button, input, textarea {
   cursor: none !important;
 }
 
+@media (pointer: coarse) {
+  .custom-cursor-class { 
+    display: none !important; 
+  }
+}
