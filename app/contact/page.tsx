@@ -129,7 +129,30 @@ useEffect(() => {
         
         <div style={{ position: "absolute", top: "40px", left: "40px", zIndex: 100, display: "flex", gap: "20px" }}>
           <Link href="/" style={glassButtonStyle}>←</Link>
-          <button onClick={() => setShowProjects(true)} style={glassButtonStyle}>RECENT PROJECTS</button>
+        <motion.button
+  onClick={() => setShowProjects(true)}
+  style={glassButtonStyle}
+  animate={{
+    boxShadow: [
+      "0 0 5px rgba(135, 206, 235, 0.2)",
+      "0 0 20px rgba(135, 206, 235, 0.5)",
+      "0 0 5px rgba(135, 206, 235, 0.2)"
+    ],
+  }}
+  transition={{
+    duration: 2,
+    repeat: Infinity,
+    ease: "easeInOut"
+  }}
+  whileHover={{ 
+    scale: 1.05, 
+    backgroundColor: "rgba(135, 206, 235, 0.2)",
+    boxShadow: "0 0 25px rgba(135, 206, 235, 0.8)" 
+  }}
+>
+  RECENT PROJECTS
+</motion.button>
+
         </div>
          
       
